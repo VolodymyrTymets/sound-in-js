@@ -1,0 +1,12 @@
+.player-controls {
+  display: flex;
+  justify-content: center;
+}
+.player-volume-control {
+  width: 250px;
+  justify-content: space-around;
+  display: flex;
+}
+.player-volume-control .range-select {
+  width: 60%;
+}
