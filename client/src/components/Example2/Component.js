@@ -4,9 +4,9 @@ import 'react-input-range/lib/css/index.css'
 import './styles.css';
 
 
-export const Example2Container = ({ playState, progress, volumeLevel, onPlayBtnClick, isActive, onVolumeChange }) =>
+export const Example2Container = ({ playState, progress, volumeLevel, loading, onPlayBtnClick, onVolumeChange }) =>
   <div>
-    <h4>Example 1: <small className="text-muted">Audio element</small></h4>
+    <h4>Example 2: <small className="text-muted">Audio element</small></h4>
     <div className="player">
       <div className="progress">
         <div
@@ -20,9 +20,9 @@ export const Example2Container = ({ playState, progress, volumeLevel, onPlayBtnC
       </div>
       <div className="player-controls mt-2">
 
-        <div></div>
+        <div>{loading && <i className="fas fa-spinner fa-spin"></i>}</div>
 
-        <button type="button" className="btn btn-warning" onClick={onPlayBtnClick}>
+        <button type="button" className="btn btn-warning" onClick={onPlayBtnClick} disabled={loading}>
           <i className={`fas fa-${playState}`}></i>
         </button>
 
