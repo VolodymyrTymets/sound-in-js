@@ -6,12 +6,13 @@ import { Example2Container } from './Component';
 export const Example2 = compose(
   withState('volumeLevel', 'setVolumeLevel', 50),
   withState('progress', 'setProgress', 0),
-  withState('playState', 'setPlayState', ''),
+  withState('playState', 'setPlayState', 'stop'),
   withProps({
     isActive: (stateType, type) => stateType === type ? 'active' : '',
   }),
   withHandlers({
-    onPlayBtnClick: props => type => () => props.setPlayState(type),
+    onPlayBtnClick: ({ playState, setPlayState }) => () =>
+      setPlayState(playState === 'play' ? 'stop' : 'play'),
     onVolumeChange: props => ({ max }) => props.setVolumeLevel(max),
   }),
   lifecycle({
