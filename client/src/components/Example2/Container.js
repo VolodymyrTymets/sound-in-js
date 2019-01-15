@@ -3,38 +3,49 @@ import { compose, lifecycle, withState, withHandlers, withProps } from 'recompos
 import { loadFile } from './utils';
 import { Example2Container } from './Component';
 
-let startedAt;
-let pausedAt;
-let isPause = true;
-let duration = 0;
-
 export const Example2 = compose(
   withState('volumeLevel', 'setVolumeLevel', 50),
   withState('progress', 'setProgress', 0),
   withState('playState', 'setPlayState', 'play'),
   withState('loading', 'setLoading', false),
   withState('player', 'setPlayer', null),
+  withState('audionState', 'setAudionState', {
+    startedAt: null,
+    pausedAt: null,
+    isPause: true,
+    duration: 0,
+  }),
+  withProps(({ audionState, setAudionState }) => ({
+    changeAudionState: newState => setAudionState({ ...audionState, ...newState }),
+  })),
   withHandlers({
     onPlayBtnClick: (props) => async () => {
-      const { player } = props;
+      const { player, audionState } = props;
 
       try {
         if(!player) {
           props.setLoading(true);
           const newPlayer = await loadFile('/api/v1/track');
-          duration = newPlayer.duration;
+
           props.setLoading(false);
           props.setPlayer(newPlayer);
-
-          startedAt = Date.now();
+          props.changeAudionState({
+            startedAt: Date.now(),
+            isPause: false,
+            duration: newPlayer.duration,
+          });
 
           newPlayer.play(0);
-          isPause = false;
           return props.setPlayState('stop');
         }
-        startedAt = Date.now() - pausedAt;
-        player.play(pausedAt / 1000);
-        isPause = false
+
+        props.changeAudionState({
+          startedAt: Date.now() - audionState.pausedAt,
+          isPause: false,
+        });
+
+        player.play(audionState.pausedAt / 1000);
+
         return props.setPlayState('stop');
       } catch (e) {
         props.setLoading(false);
@@ -42,22 +53,38 @@ export const Example2 = compose(
       }
     },
     onStopBtnClick: props => () => {
-      const { player } = props;
-      // to resume
-      pausedAt = Date.now() - startedAt;
+      const { player, audionState  } = props;
+      props.changeAudionState({
+        pausedAt:  Date.now() - audionState.startedAt,
+        isPause: true,
+      });
       player && player.stop();
       props.setPlayState('play');
-      isPause = true
     },
     onVolumeChange: props => ({ max }) => props.setVolumeLevel(max),
+    onProgressClick: props => (e) => {
+      const { player, audionState } = props;
+
+      const rate = (e.clientX * 100) / e.target.offsetWidth;
+      const playbackTime = (audionState.duration * rate) / 100;
+
+      player && player.stop();
+      player && player.play(playbackTime);
+
+      props.setProgress(parseInt(rate, 10));
+      props.changeAudionState({
+        startedAt: Date.now() - playbackTime * 1000,
+      });
+    }
   }),
   lifecycle({
     componentDidMount() {
       setInterval(() => {
+        const { startedAt, isPause, duration } = this.props.audionState;
         if(startedAt && !isPause) {
           const playbackTime = (Date.now() - startedAt) / 1000;
           const rate = parseInt((playbackTime * 100) / duration, 10);
-          rate < 100 && this.props.setProgress(rate);
+          rate <= 100 && this.props.setProgress(rate);
         }
       },1000)
     }

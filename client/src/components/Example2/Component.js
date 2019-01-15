@@ -4,16 +4,17 @@ import 'react-input-range/lib/css/index.css'
 import './styles.css';
 
 
-export const Example2Container = ({ playState, progress, volumeLevel, loading, onPlayBtnClick, onVolumeChange, onStopBtnClick }) =>
+export const Example2Container = ({ playState, progress, volumeLevel, loading, onPlayBtnClick, onVolumeChange, onStopBtnClick, onProgressClick }) =>
   <div>
     <h4>Example 2: <small className="text-muted">Audio element</small></h4>
     <div className="player">
-      <div className="progress">
+      <div className="progress" onClick={onProgressClick}>
         <div
           className="progress-bar"
           role="progressbar"
           style={{width: `${progress}%`}}
           aria-valuemax="100"
+          onClick={e => console.log(e)}
         >
         </div>
       </div>
