@@ -1,6 +1,3 @@
-git ch
-git push -f heroku build:master
-
 # Deploy on Heroku
 
 git checkout build
