@@ -1,0 +1,4 @@
+.example-3-wrapper {
+  display: flex;
+  flex-direction: column;
+}
