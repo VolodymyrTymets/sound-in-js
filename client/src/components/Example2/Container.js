@@ -4,7 +4,7 @@ import { loadFile } from './utils';
 import { Example2Container } from './Component';
 
 export const Example2 = compose(
-  withState('volumeLevel', 'setVolumeLevel', 50),
+  withState('volumeLevel', 'setVolumeLevel', 100),
   withState('progress', 'setProgress', 0),
   withState('playState', 'setPlayState', 'play'),
   withState('loading', 'setLoading', false),
@@ -61,7 +61,13 @@ export const Example2 = compose(
       player && player.stop();
       props.setPlayState('play');
     },
-    onVolumeChange: props => ({ max }) => props.setVolumeLevel(max),
+    onVolumeChange: props => ({ max }) => {
+      const value = max / 100;
+      const level = value > 0.5 ? value * 2 : value * -2;
+      props.player.setVolume(level || -1);
+
+      props.setVolumeLevel(max || 0)
+    },
     onProgressClick: props => (e) => {
       const { player, audionState } = props;
 

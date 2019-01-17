@@ -15,6 +15,7 @@ const loadFile = (url) => new Promise(async (resolve, reject) => {
    });
    // create audio context
    const audioContext = getAudioContext();
+   const gainNode = audioContext.createGain();
    // create audioBuffer (decode audio file)
    const audioBuffer = await audioContext.decodeAudioData(response.data);
 
@@ -32,15 +33,24 @@ const loadFile = (url) => new Promise(async (resolve, reject) => {
      source.connect(scriptNode);
      source.connect(audioContext.destination);
      scriptNode.connect(audioContext.destination);
+
+     source.connect(gainNode);
+     gainNode.connect(audioContext.destination);
+
      // can be used here
      // scriptNode.onaudioprocess = (e) => {};
      source.start(0, resumeTime);
    };
    const stop = () => {
+     // can be used here
+     // scriptNode.onaudioprocess = null;
      source && source.stop(0);
    };
 
-   resolve({ play, stop, duration: audioBuffer.duration });
+   const setVolume = (level) => {
+     gainNode.gain.setValueAtTime(level, audioContext.currentTime);
+   };
+   resolve({ play, stop, setVolume, duration: audioBuffer.duration,  });
  } catch (e) {
    reject(e)
  }
