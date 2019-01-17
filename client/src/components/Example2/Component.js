@@ -6,9 +6,9 @@ import './styles.css';
 
 export const Example2Container = ({ playState, progress, volumeLevel, loading, onPlayBtnClick, onVolumeChange, onStopBtnClick, onProgressClick }) =>
   <div>
-    <h4>Example 2: <small className="text-muted">Audio element</small></h4>
-    <div className="player">
-      <div className="progress" onClick={onProgressClick}>
+    <h4>Example 2: <small className="text-muted">Custom audio element</small></h4>
+    <div className="player mt-4">
+      <div className="progress player-progress mb-2" onClick={onProgressClick}>
         <div
           className="progress-bar"
           role="progressbar"

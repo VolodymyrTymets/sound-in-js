@@ -1,3 +1,6 @@
+.player-progress {
+  cursor: pointer;
+}
 .player-controls {
   display: flex;
   justify-content: space-between;
