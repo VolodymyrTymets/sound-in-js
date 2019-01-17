@@ -33,6 +33,6 @@ app.get('*', (req, res) => {
 });
 
 const server = http.createServer(app);
-server.listen('3001', function () {
+server.listen(process.env.PORT || '3001', function () {
   console.log('Server app listening on port 3001!');
 });
