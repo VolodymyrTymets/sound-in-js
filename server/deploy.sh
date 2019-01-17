@@ -1,1 +1,0 @@
-§git push -f heroku build:master
