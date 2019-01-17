@@ -16,8 +16,8 @@ git add ./server/public/
 git commit -m 'build' -n
 
 ## make build commit
-git subtree split --prefix ./server -b heroku-deploy
+git subtree split -P server -b heroku-deploy
 git push -f heroku heroku-deploy:master
-git branch -D heroku-api
+git branch -D heroku-deploy
 
 git checkout master
