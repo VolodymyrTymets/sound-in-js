@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const getAudioContext =  () => {
+const getAudioContext = () => {
   AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
   const analyser = audioContext.createAnalyser();
@@ -58,7 +58,7 @@ const loadFile = (url, { frequencyC, sinewaveC }, styles) => new Promise(async (
    const drawSinewave = function() {
      analyser.getByteTimeDomainData(sinewaveDataArray);
      requestAnimationFrame(drawSinewave);
-     console.log(sinewaveDataArray)
+
      sinewaveСanvasCtx.fillStyle = styles.fillStyle;
      sinewaveСanvasCtx.fillRect(0, 0, sinewaveC.width, sinewaveC.height);
      sinewaveСanvasCtx.lineWidth = styles.lineWidth;
@@ -69,7 +69,7 @@ const loadFile = (url, { frequencyC, sinewaveC }, styles) => new Promise(async (
      let x = 0;
 
      for(let i = 0; i < analyser.fftSize; i++) {
-       const v = sinewaveDataArray[i] / 128.0; // byte / 2 || 255 / 2
+       const v = sinewaveDataArray[i] / 128.0; // byte / 2 || 256 / 2
        const y = v * sinewaveC.height / 2;
 
        if(i === 0) {
