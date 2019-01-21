@@ -52,7 +52,7 @@ io.on('connection', client => {
     // pipe stream with response stream
     readStream.pipe(stream);
 
-    ss(client).emit('track-chanck', stream, { stat });
+    ss(client).emit('track-stream', stream, { stat });
   });
   client.on('disconnect', () => {});
 });
