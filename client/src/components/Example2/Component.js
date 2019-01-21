@@ -30,9 +30,9 @@ export const Example2Container = ({ playState, progress, volumeLevel, loading, o
           <i className={`fas fa-${playState}`}></i>
         </button>
 
-        <div className="player-volume-control mt-2">
+        <div className="player-volume-control ">
           <i onClick={() => onVolumeChange({ max: 0 })} className="fas fa-volume-down"></i>
-          <div className="range-select mt-1">
+          <div className="range-select">
             <InputRange
               maxValue={100}
               minValue={0}

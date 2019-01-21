@@ -6,7 +6,9 @@
   justify-content: space-between;
 }
 .player-volume-control {
-  width: 250px;
+  width: 15%;
+  min-width: 150px;
+  font-size: small;
   justify-content: space-around;
   display: flex;
 }

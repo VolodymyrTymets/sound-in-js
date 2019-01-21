@@ -21,10 +21,7 @@ const loadFile = (url, { frequencyC, sinewaveC }, styles, onLoadProcess) => new 
      responseType: 'arraybuffer',
    });
 
-   socket.emit('track', (e) => {
-     debugger
-   });
-
+   socket.emit('track', (e) => {});
    ss(socket).on('track-stream', (stream, { stat }) => {
      console.log(stat);
      stream.on('data', (data) => {

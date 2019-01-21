@@ -42,18 +42,17 @@ const io = require('socket.io').listen(server, {
 });
 
 io.on('connection', client => {
-  console.log('----> connect')
+
   const stream = ss.createStream();
 
   client.on('track', () => {
     const filePath = path.resolve(__dirname, './private', './track.wav');
     const stat = fileSystem.statSync(filePath);
     const readStream = fileSystem.createReadStream(filePath);
-    console.log('on track', stat);
-    // attach this stream with response stream
+    // pipe stream with response stream
     readStream.pipe(stream);
 
-    ss(client).emit('track-stream', stream, { stat });
+    ss(client).emit('track-chanck', stream, { stat });
   });
   client.on('disconnect', () => {});
 });
