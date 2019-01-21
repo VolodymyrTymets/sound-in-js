@@ -1,0 +1,46 @@
+.player-progress {
+  cursor: pointer;
+}
+.player-controls {
+  display: flex;
+  justify-content: space-between;
+}
+.player-volume-control {
+  width: 250px;
+  justify-content: space-around;
+  display: flex;
+}
+.player-volume-control .range-select {
+  width: 60%;
+}
+
+.player-volume-control .input-range__slider {
+  height: 0.5rem;
+  width: 0.5rem;
+  margin-left: -0.30rem;
+  margin-top: -0.40rem;
+  top: 30%;
+}
+.player-volume-control .input-range__label--value {
+  display: none;
+}
+.player-volume-control .input-range__label--max {
+  display: none;
+}
+.player-volume-control .input-range__label--min {
+  display: none;
+}
+.player-volume-control .input-range__slider {
+  background: #ff5722;
+  border: 1px solid #ff5722;
+}
+
+.player-volume-control .input-range__track--active {
+  background: #ff5722;
+}
+
+.bars-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

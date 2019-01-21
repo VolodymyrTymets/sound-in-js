@@ -1,6 +1,7 @@
 const http = require('http');
 const fileSystem = require('fs');
 const express = require('express');
+const ss = require('socket.io-stream');
 const path = require('path');
 const app = express();
 const api = express();
@@ -33,6 +34,30 @@ app.get('*', (req, res) => {
 });
 
 const server = http.createServer(app);
+const io = require('socket.io').listen(server, {
+  log: false,
+  agent: false,
+  origins: '*:*',
+  transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
+});
+
+io.on('connection', client => {
+  console.log('----> connect')
+  const stream = ss.createStream();
+
+  client.on('track', () => {
+    const filePath = path.resolve(__dirname, './private', './track.wav');
+    const stat = fileSystem.statSync(filePath);
+    const readStream = fileSystem.createReadStream(filePath);
+    console.log('on track', stat);
+    // attach this stream with response stream
+    readStream.pipe(stream);
+
+    ss(client).emit('track-stream', stream, { stat });
+  });
+  client.on('disconnect', () => {});
+});
+
 server.listen(process.env.PORT || '3001', function () {
   console.log('Server app listening on port 3001!');
 });
