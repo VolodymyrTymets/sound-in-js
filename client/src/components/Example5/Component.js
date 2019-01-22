@@ -3,7 +3,7 @@ import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import './styles.css';
 
-export const Example5Container = ({ playState, progress, volumeLevel, loading, loadingProcess, onPlayBtnClick, onVolumeChange, onStopBtnClick, onProgressClick }) =>
+export const Example5Container = ({ playState, progress, volumeLevel, audionState, loading, onPlayBtnClick, onVolumeChange, onStopBtnClick, onProgressClick }) =>
   <div>
     <h4>Example 5: <small className="text-muted">Audio bars</small></h4>
 
@@ -11,7 +11,7 @@ export const Example5Container = ({ playState, progress, volumeLevel, loading, l
     <canvas className="frequency-bars" width="1024" height="100"></canvas>
     <canvas className="sinewave" width="1024" height="100"></canvas>
     </div>
-
+    {playState.loadingProcess}
     <div className="player mt-4">
       <div className="progress player-progress mb-2" onClick={onProgressClick}>
         <div
@@ -25,7 +25,7 @@ export const Example5Container = ({ playState, progress, volumeLevel, loading, l
         <div
           className="progress-bar bg-info"
           role="progressbar"
-          style={{width: `${parseInt(loadingProcess, 10)}%`}}
+          style={{width: `${parseInt(audionState.loadingProcess, 10)}%`}}
           aria-valuemax="100"
         >
         </div>
@@ -33,7 +33,6 @@ export const Example5Container = ({ playState, progress, volumeLevel, loading, l
       <div className="player-controls mt-2">
 
         <div>{loading && <i className="fas fa-spinner fa-spin"></i>}</div>
-
         <button
           type="button"
           className="btn btn-warning"

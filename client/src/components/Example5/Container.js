@@ -8,21 +8,18 @@ export const Example5 = compose(
   withState('progress', 'setProgress', 0),
   withState('playState', 'setPlayState', 'play'),
   withState('loading', 'setLoading', false),
-  withState('loadingProcess', 'setLoadingProcess', 0),
   withState('player', 'setPlayer', null),
   withState('audionState', 'setAudionState', {
     startedAt: null,
     pausedAt: null,
     isPause: true,
     duration: 0,
+    loadingProcess: 0,
   }),
   withProps(({ audionState, setAudionState }) => ({
-    changeAudionState: newState => setAudionState({ ...audionState, ...newState }),
+    changeAudionState: newState =>
+      setAudionState({ ...audionState, ...newState }),
   })),
-  withHandlers({
-    onLoadingProcess: ({ loadingProcess, setLoadingProcess }) => rate =>
-      setLoadingProcess(loadingProcess + rate),
-  }),
   withHandlers({
     onPlayBtnClick: (props) => async () => {
       const { player, audionState } = props;
@@ -32,7 +29,7 @@ export const Example5 = compose(
           props.setLoading(true);
           const frequencyC = document.querySelector('.frequency-bars');
           const sinewaveC = document.querySelector('.sinewave');
-          const newPlayer = await loadFile('/api/v1/track', {
+          const newPlayer = await loadFile({
             frequencyC,
             sinewaveC
           }, {
@@ -40,16 +37,15 @@ export const Example5 = compose(
             strokeStyle: 'rgb(251, 89, 17)', // line color
             lineWidth: 1,
             fftSize: 16384 // delization of bars from 1024 to 32768
-          }, props.onLoadingProcess);
-
+          }, props.changeAudionState);
           props.setLoading(false);
           props.setPlayer(newPlayer);
+
           props.changeAudionState({
             startedAt: Date.now(),
             isPause: false,
-            duration: newPlayer.duration,
           });
-
+          console.log('---->> changeAudionState')
           newPlayer.play(0);
           return props.setPlayState('stop');
         }
@@ -103,6 +99,7 @@ export const Example5 = compose(
       setInterval(() => {
         const { startedAt, isPause, duration } = this.props.audionState;
         if(startedAt && !isPause) {
+          console.log('duration')
           const playbackTime = (Date.now() - startedAt) / 1000;
           const rate = parseInt((playbackTime * 100) / duration, 10);
           rate <= 100 && this.props.setProgress(rate);
