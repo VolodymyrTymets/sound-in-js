@@ -8,8 +8,8 @@ export const Example5Container = ({ playState, progress, volumeLevel, audionStat
     <h4>Example 5: <small className="text-muted">Audio bars</small></h4>
 
     <div className="bars-wrapper">
-    <canvas className="frequency-bars" width="1024" height="100"></canvas>
-    <canvas className="sinewave" width="1024" height="100"></canvas>
+      <canvas className="frequency-bars" width="1024" height="100"></canvas>
+      <canvas className="sinewave" width="1024" height="100"></canvas>
     </div>
     {playState.loadingProcess}
     <div className="player mt-4">

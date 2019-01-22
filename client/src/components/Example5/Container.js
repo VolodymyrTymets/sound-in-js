@@ -9,11 +9,9 @@ export const Example5 = compose(
   withState('playState', 'setPlayState', 'play'),
   withState('loading', 'setLoading', false),
   withState('player', 'setPlayer', null),
+  withState('duration', 'setDuration', 0),
   withState('audionState', 'setAudionState', {
     startedAt: null,
-    pausedAt: null,
-    isPause: true,
-    duration: 0,
     loadingProcess: 0,
   }),
   withProps(({ audionState, setAudionState }) => ({
@@ -22,7 +20,7 @@ export const Example5 = compose(
   })),
   withHandlers({
     onPlayBtnClick: (props) => async () => {
-      const { player, audionState } = props;
+      const { player } = props;
 
       try {
         if(!player) {
@@ -37,25 +35,15 @@ export const Example5 = compose(
             strokeStyle: 'rgb(251, 89, 17)', // line color
             lineWidth: 1,
             fftSize: 16384 // delization of bars from 1024 to 32768
-          }, props.changeAudionState);
+          }, props);
           props.setLoading(false);
           props.setPlayer(newPlayer);
 
-          props.changeAudionState({
-            startedAt: Date.now(),
-            isPause: false,
-          });
-          console.log('---->> changeAudionState')
-          newPlayer.play(0);
           return props.setPlayState('stop');
         }
 
-        props.changeAudionState({
-          startedAt: Date.now() - audionState.pausedAt,
-          isPause: false,
-        });
-
-        player.play(audionState.pausedAt / 1000);
+        player.play(0);
+        props.changeAudionState({ startedAt: Date.now() });
 
         return props.setPlayState('stop');
       } catch (e) {
@@ -64,26 +52,22 @@ export const Example5 = compose(
       }
     },
     onStopBtnClick: props => () => {
-      const { player, audionState  } = props;
-      props.changeAudionState({
-        pausedAt:  Date.now() - audionState.startedAt,
-        isPause: true,
-      });
+      const { player } = props;
       player && player.stop();
       props.setPlayState('play');
     },
     onVolumeChange: props => ({ max }) => {
       const value = max / 100;
-      const level = value > 0.5 ? value * 4 : value * -4;
+      const level = value > 0.5 ? value * 2 : value * -2;
       props.player.setVolume(level || -1);
 
       props.setVolumeLevel(max || 0)
     },
     onProgressClick: props => (e) => {
-      const { player, audionState } = props;
+      const { player, duration } = props;
 
       const rate = (e.clientX * 100) / e.target.offsetWidth;
-      const playbackTime = (audionState.duration * rate) / 100;
+      const playbackTime = (duration * rate) / 100;
 
       player && player.stop();
       player && player.play(playbackTime);
@@ -97,9 +81,10 @@ export const Example5 = compose(
   lifecycle({
     componentDidMount() {
       setInterval(() => {
-        const { startedAt, isPause, duration } = this.props.audionState;
-        if(startedAt && !isPause) {
-          console.log('duration')
+        const { startedAt } = this.props.audionState;
+        const { duration } = this.props;
+
+        if(startedAt) {
           const playbackTime = (Date.now() - startedAt) / 1000;
           const rate = parseInt((playbackTime * 100) / duration, 10);
           rate <= 100 && this.props.setProgress(rate);

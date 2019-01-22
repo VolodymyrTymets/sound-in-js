@@ -14,31 +14,28 @@ const getAudioContext =  () => {
   return { audioContext, analyser };
 };
 
-const loadFile = ({ frequencyC, sinewaveC }, styles, changeAudionState) => new Promise(async (resolve, reject) => {
+const loadFile = ({ frequencyC, sinewaveC }, styles, props) => new Promise(async (resolve, reject) => {
  try {
-
+   const { changeAudionState, setDuration } = props;
    let source = null;
    let playWhileLoadingDuration = 0;
    let startAt = 0;
-   const latency = 100;
+   let audioBuffer = null;
+   let activeSource = null;
 
    // create audio context
    const { audioContext, analyser } = getAudioContext();
    const gainNode = audioContext.createGain();
 
-
    analyser.fftSize = styles.fftSize;
    let frequencyDataArray = new Uint8Array(analyser.frequencyBinCount);
    let sinewaveDataArray = new Uint8Array(analyser.fftSize);
-
-
    const frequencyСanvasCtx = frequencyC.getContext("2d");
    frequencyСanvasCtx.clearRect(0, 0, frequencyC.width, frequencyC.height);
    const sinewaveСanvasCtx = sinewaveC.getContext("2d");
    sinewaveСanvasCtx.clearRect(0, 0, sinewaveC.width, sinewaveC.height);
 
-
-   // draw frequency - bar
+    // draw frequency - bar
    const drawFrequency = function() {
      analyser.getByteFrequencyData(frequencyDataArray);
      requestAnimationFrame(drawFrequency);
@@ -89,95 +86,81 @@ const loadFile = ({ frequencyC, sinewaveC }, styles, changeAudionState) => new P
      sinewaveСanvasCtx.stroke();
    };
 
-
-
    const playWhileLoading = (duration = 0) => {
+     source.connect(audioContext.destination);
+     source.connect(gainNode);
+     source.connect(analyser);
+     source.start(0, duration);
+     activeSource = source;
+     drawFrequency();
+     drawSinewave();
+   };
+
+   const play = (resumeTime = 0) => {
+     // create audio source
+     source = audioContext.createBufferSource();
+     source.buffer = audioBuffer;
+
      source.connect(audioContext.destination);
 
      source.connect(gainNode);
      gainNode.connect(audioContext.destination);
 
      source.connect(analyser);
-     source.start(0, duration);
+     source.start(0, resumeTime );
+
      drawFrequency();
      drawSinewave();
    };
 
-   setTimeout(() => {
-     playWhileLoadingDuration = source.buffer.duration - (latency / 1000);
-     startAt = Date.now();
-     playWhileLoading();
-   }, latency)
-
    const whileLoadingInterval = setInterval(() => {
-     const inSec = (Date.now() - startAt) / 1000;
-     if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
-       startAt = Date.now()
-       playWhileLoading(playWhileLoadingDuration);
-       console.log('whileLoadingInterva; --> ', { inSec, playWhileLoadingDuration });
-       playWhileLoadingDuration = source.buffer.duration
+     if(startAt) {
+       const inSec = (Date.now() - startAt) / 1000;
+       if (playWhileLoadingDuration && inSec >= playWhileLoadingDuration) {
+         playWhileLoading(playWhileLoadingDuration);
+         playWhileLoadingDuration = source.buffer.duration
+       }
+     } else if(source) {
+       playWhileLoadingDuration = source.buffer.duration;
+       startAt = Date.now();
+       playWhileLoading();
      }
-   }, 1000);
+   }, 500);
 
-   const play = (resumeTime = 0) => {
-
-     // create audio source
-     source = audioContext.createBufferSource();
-     // source.buffer = audioBuffer;
-     // setTimeout(function () {
-     //
-     //
-     // source.connect(audioContext.destination);
-     //
-     // source.connect(gainNode);
-     // gainNode.connect(audioContext.destination);
-     //
-     // source.connect(analyser);
-     // source.start(0);
-     // }, 500)
-     // drawFrequency();
-     // drawSinewave();
-   };
-
-
-
-   const stop = () => {
-     source && source.stop(0);
-   };
-
-   const setVolume = (level) => {
+   const stop = () => source && source.stop(0);
+   const setVolume = (level) =>
      gainNode.gain.setValueAtTime(level, audioContext.currentTime);
-   };
 
-
+   // load file while socket
    socket.emit('track', (e) => {});
    ss(socket).on('track-stream', (stream, { stat }) => {
-     console.log(stat);
      let rate = 0;
      let isData = false;
      stream.on('data', async (data) => {
        const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
-       const audioBuffer = source.buffer ? appendBuffer(source.buffer, audioBufferChunk, audioContext) : audioBufferChunk;
+       const newaudioBuffer = (source && source.buffer) ? appendBuffer(source.buffer, audioBufferChunk, audioContext) : audioBufferChunk;
        source = audioContext.createBufferSource();
-       source.buffer = audioBuffer;
+       source.buffer = newaudioBuffer;
 
        const loadRate = (data.length * 100 ) / stat.size;
        rate = rate + loadRate;
-       changeAudionState({ loadingProcess: rate });
+       changeAudionState({ loadingProcess: rate, startedAt: startAt });
 
        if(rate >= 100) {
-         console.log(' ---> end', source.buffer.duration);
          clearInterval(whileLoadingInterval);
-
+         audioBuffer = source.buffer;
+         const inSec = (Date.now() - startAt) / 1000;
+         activeSource.stop();
+         play(inSec);
+         resolve({ play, stop, setVolume });
        }
        isData = true;
        // first time load
        if(isData && rate === loadRate) {
-         console.log('duration ->', (100 / loadRate) * audioBufferChunk.duration);
-         changeAudionState({ duration: (100 / loadRate) * audioBufferChunk.duration });
+         const duration = (100 / loadRate) * audioBufferChunk.duration;
+         setDuration(duration)
        }
      });
-     resolve({ play, stop, setVolume });
    });
  } catch (e) {
    reject(e)
