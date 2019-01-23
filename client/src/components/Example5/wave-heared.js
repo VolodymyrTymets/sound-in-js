@@ -7,23 +7,22 @@ const concat = (buffer1, buffer2) => {
   return tmp.buffer;
 };
 
-function appendBuffer(buffer1, buffer2, context) {
-  var numberOfChannels = Math.min( buffer1.numberOfChannels, buffer2.numberOfChannels );
-  var tmp = context.createBuffer( numberOfChannels, (buffer1.length + buffer2.length), buffer1.sampleRate );
-  for (var i=0; i<numberOfChannels; i++) {
-    var channel = tmp.getChannelData(i);
+const appendBuffer = (buffer1, buffer2, context) => {
+  const numberOfChannels = Math.min( buffer1.numberOfChannels, buffer2.numberOfChannels );
+  const tmp = context.createBuffer( numberOfChannels, (buffer1.length + buffer2.length), buffer1.sampleRate );
+  for (let i=0; i<numberOfChannels; i++) {
+    const channel = tmp.getChannelData(i);
     channel.set( buffer1.getChannelData(i), 0);
     channel.set( buffer2.getChannelData(i), buffer1.length);
   }
   return tmp;
-}
-
+};
 
 
 const withWaveHeader = (data, numberOfChannels, sampleRate) => {
   const header = new ArrayBuffer(44);
 
-  var d = new DataView(header);
+  const d = new DataView(header);
 
   d.setUint8(0, "R".charCodeAt(0));
   d.setUint8(1, "I".charCodeAt(0));

@@ -107,7 +107,7 @@ const loadFile = ({ frequencyC, sinewaveC }, styles, props) => new Promise(async
      gainNode.connect(audioContext.destination);
 
      source.connect(analyser);
-     source.start(0, resumeTime );
+     source.start(0, resumeTime);
 
      drawFrequency();
      drawSinewave();
@@ -138,7 +138,9 @@ const loadFile = ({ frequencyC, sinewaveC }, styles, props) => new Promise(async
      let isData = false;
      stream.on('data', async (data) => {
        const audioBufferChunk = await audioContext.decodeAudioData(withWaveHeader(data, 2, 44100));
-       const newaudioBuffer = (source && source.buffer) ? appendBuffer(source.buffer, audioBufferChunk, audioContext) : audioBufferChunk;
+       const newaudioBuffer = (source && source.buffer)
+         ? appendBuffer(source.buffer, audioBufferChunk, audioContext)
+         : audioBufferChunk;
        source = audioContext.createBufferSource();
        source.buffer = newaudioBuffer;
 
