@@ -25,6 +25,10 @@ export const Example3Container = ({ playState, frequency, onPlayBtnClick, onStop
          >
           <i className={`fas fa-${playState}`}></i>
         </button>
-
-    </div>
+      </div>
+    <h4 className="text-center mt-5">
+      <a href="https://github.com/VolodymyrTymets/sound-in-js/tree/master/client/src/components/Example3" target='blank'>
+        See code example here
+      </a>
+    </h4>
   </div>;

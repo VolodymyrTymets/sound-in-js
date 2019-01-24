@@ -5,7 +5,7 @@ import './styles.css';
 
 export const Example5Container = ({ playState, progress, volumeLevel, audionState, loading, onPlayBtnClick, onVolumeChange, onStopBtnClick, onProgressClick }) =>
   <div>
-    <h4>Example 5: <small className="text-muted">Audio bars</small></h4>
+    <h4>Example 5: <small className="text-muted">Sound Streaming</small></h4>
 
     <div className="bars-wrapper">
       <canvas className="frequency-bars" width="1024" height="100"></canvas>
@@ -55,4 +55,9 @@ export const Example5Container = ({ playState, progress, volumeLevel, audionStat
         </div>
       </div>
     </div>
+    <h4 className="text-center mt-5">
+      <a href="https://github.com/VolodymyrTymets/sound-in-js/tree/master/client/src/components/Example5" target='blank'>
+        See code example here
+      </a>
+    </h4>
   </div>;

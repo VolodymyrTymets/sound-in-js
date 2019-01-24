@@ -44,4 +44,10 @@ export const Example2Container = ({ playState, progress, volumeLevel, loading, o
         </div>
       </div>
     </div>
+
+    <h4 className="text-center mt-5">
+      <a href="https://github.com/VolodymyrTymets/sound-in-js/tree/master/client/src/components/Example2" target='blank'>
+        See code example here
+      </a>
+    </h4>
   </div>;
