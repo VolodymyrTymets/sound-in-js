@@ -34,6 +34,8 @@ app.get('*', (req, res) => {
 });
 
 const server = http.createServer(app);
+// port is missing  after the require,  well  it would give me an error without a port 
+// const io = require('socket.io')('3001').listen(...  worked for me 
 const io = require('socket.io').listen(server, {
   log: false,
   agent: false,
